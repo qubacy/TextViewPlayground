@@ -64,12 +64,11 @@ open class MessageView<
 
         mMessage = message
 
+        resetContent()
         setContentWithMessage(message)
     }
 
     protected open fun setContentWithMessage(message: MessageType) {
-        resetContent()
-
         message.text?.also { setText(it) }
         message.image?.also { setImage(it) }
     }

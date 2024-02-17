@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
