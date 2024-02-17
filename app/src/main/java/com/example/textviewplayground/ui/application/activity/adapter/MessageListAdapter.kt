@@ -21,22 +21,22 @@ class MessageListAdapter() : RecyclerView.Adapter<MessageListAdapter.MessageView
     }
 
     class PreviousMessageViewHolder(
-        messageView: PreviousMessageView
+        val messageView: PreviousMessageView
     ) : MessageViewHolder(messageView) {
-        private val mMessageView: PreviousMessageView = messageView
-
         override fun setData(message: Message) {
-            mMessageView.setMessage(message)
+            messageView.setMessage(message)
         }
     }
 
     class ActiveMessageViewHolder(
-        messageView: ActiveMessageView
+        val messageView: ActiveMessageView
     ) : MessageViewHolder(messageView) {
-        private val mMessageView: ActiveMessageView = messageView
+        private var mLastMessage: Message? = null
 
         override fun setData(message: Message) {
-            mMessageView.setMessage(message)
+            messageView.setMessage(message, mLastMessage != message)
+
+            mLastMessage = message
         }
     }
 

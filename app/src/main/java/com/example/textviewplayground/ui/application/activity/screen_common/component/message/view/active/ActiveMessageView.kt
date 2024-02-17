@@ -1,8 +1,6 @@
 package com.example.textviewplayground.ui.application.activity.screen_common.component.message.view.active
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.appcompat.widget.AppCompatImageView
@@ -16,31 +14,31 @@ class ActiveMessageView(
     context: Context, attrs: AttributeSet
 ) : MessageView<
     TypingMaterialTextView, AppCompatImageView, Message
->(context, attrs), TextWatcher, TypingMaterialTextViewCallback {
+>(context, attrs), TypingMaterialTextViewCallback {
+    private var mAnimateTyping: Boolean = true
+
     override fun inflateTextView(): TypingMaterialTextView {
         return (LayoutInflater.from(context).inflate(
             R.layout.component_active_message_text, this, false) as TypingMaterialTextView)
             .apply {
-                addTextChangedListener(this@ActiveMessageView)
                 setCallback(this@ActiveMessageView)
             }
     }
 
-    override fun setTextContent(text: String) {
-        mTextView!!.typeText(text)
+    fun setMessage(message: Message, animate: Boolean) {
+        mAnimateTyping = animate
+
+        setMessage(message)
     }
 
-    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-    override fun afterTextChanged(p0: Editable?) {
-        // todo: can be optimized:
-        scrollDown()
+    override fun setTextContent(text: String) {
+        if (mAnimateTyping) mTextView!!.typeText(text)
+        else mTextView!!.setText(text)
     }
 
     override fun setContentWithMessage(message: Message) {
-        message.text?.also { setText(it) }
+        if (mAnimateTyping) message.text?.also { setText(it) }
+        else super.setContentWithMessage(message)
     }
 
     override fun onTextTypingFinished() {

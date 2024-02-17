@@ -55,6 +55,13 @@ class TypingMaterialTextView : MaterialTextView {
         mIsTyping = false
     }
 
+    fun setText(text: String) {
+        if (mIsTyping) stopTypingText()
+
+        mFullText = text
+        this.text = text
+    }
+
     fun typeText(text: String) {
         if (text.isEmpty()) return
 
@@ -79,11 +86,11 @@ class TypingMaterialTextView : MaterialTextView {
     private fun typeWithAnimation(text: String, length: Int) {
         if (!mIsTyping) return
 
-        this.text = text.substring(0,length)
+        this.text = text.substring(0, length)
 
         when (length) {
-            text.length -> {
-                mCallback?.onTextTypingFinished()
+            text.length - 1 -> {
+                handleTypingStop()
 
                 return
             }
@@ -91,5 +98,12 @@ class TypingMaterialTextView : MaterialTextView {
                 typeWithAnimation(text, length + 1)
             }, mCharTypingDuration)
         }
+    }
+
+    private fun handleTypingStop() {
+        text = mFullText
+        mIsTyping = false
+
+        mCallback?.onTextTypingFinished()
     }
 }
