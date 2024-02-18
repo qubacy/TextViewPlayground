@@ -1,8 +1,6 @@
 package com.example.textviewplayground.ui.application.activity.screen_common.component.typing.view
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import com.example.textviewplayground.R
@@ -22,7 +20,6 @@ class TypingMaterialTextView : MaterialTextView {
     private var mCoroutineScope: CoroutineScope? = null
     private var mCharTypingDuration: Long = DEFAULT_CHAR_TYPING_DURATION
 
-    //private var mIsTyping: Boolean = false
     private var mTypingJob: Job? = null
 
     private var mFullText: String = String()
@@ -62,8 +59,11 @@ class TypingMaterialTextView : MaterialTextView {
         mCallback = callback
     }
 
+    fun isTyping(): Boolean {
+        return mTypingJob != null
+    }
+
     fun stopTypingText() {
-        //mIsTyping = false
         handleTypingStop()
     }
 
@@ -83,47 +83,15 @@ class TypingMaterialTextView : MaterialTextView {
 
         mTypingJob = TypingJobLauncher(
             text, this, mCharTypingDuration
-        ) { mCallback?.onTextTypingFinished() }
-            .run(mCoroutineScope!!)
+        ) {
+            mTypingJob = null
+            mCallback?.onTextTypingFinished()
 
-//        val typeRunnable = fun () {
-//            mIsTyping = true
-//
-//            typeWithAnimation(text, 1)
-//        }
-//
-//        if (mIsTyping) {
-//            stopTypingText()
-//            Handler(Looper.myLooper()!!).postDelayed({ typeRunnable() }, mCharTypingDuration)
-//
-//            return
-//        }
-//
-//        typeRunnable()
+        }.run(mCoroutineScope!!)
     }
-
-//    private fun typeWithAnimation(text: String, length: Int) {
-//        Log.d(TAG, "typeWithAnimation(): text = $text; mIsTyping = $mIsTyping;")
-//
-//        if (!mIsTyping) return
-//
-//        this.text = text.substring(0, length)
-//
-//        when (length) {
-//            text.length - 1 -> {
-//                handleTypingStop()
-//
-//                return
-//            }
-//            else -> Handler(Looper.myLooper()!!).postDelayed({
-//                typeWithAnimation(text, length + 1)
-//            }, mCharTypingDuration)
-//        }
-//    }
 
     private fun handleTypingStop() {
         text = mFullText
-        //mIsTyping = false
 
         Log.d(TAG, "handleTypingStop(): job to cancel = ${mTypingJob.toString()}")
 

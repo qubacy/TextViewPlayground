@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         val message = mMessages[mLastMessageId]
 
         mAdapter.addItem(message)
+        mBinding.messageList.scrollToPosition(0)
     }
 
     private fun getNextMessageTextResId(currentMessageId: Int): Int {

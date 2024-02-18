@@ -1,5 +1,6 @@
 package com.example.textviewplayground.ui.application.activity.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,15 +35,20 @@ class MessageListAdapter(
     class ActiveMessageViewHolder(
         val messageView: ActiveMessageView
     ) : MessageViewHolder(messageView) {
-        private var mLastMessage: Message? = null
+        fun setData(message: Message, animate: Boolean) {
+            messageView.setMessage(message, animate)
+        }
 
         override fun setData(message: Message) {
-            messageView.setMessage(message, mLastMessage != message)
-
-            mLastMessage = message
+            messageView.setMessage(message)
         }
     }
 
+    companion object {
+        const val TAG = "MessageListAdapter"
+    }
+
+    private var mLastActiveMessageHash: Int = 0
     private val mItems: MutableList<Message> = mutableListOf()
     val items: List<Message> get() = mItems
 
@@ -77,13 +83,26 @@ class MessageListAdapter(
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = mItems[position]
 
-        holder.setData(message)
+        Log.d(TAG, "onBindViewHolder(): pos. = $position; message = ${message.toString()};")
+
+        when (getItemViewType(position)) {
+            ItemType.PREVIOUS.id -> holder.setData(message)
+            ItemType.ACTIVE.id -> {
+                val messageHash = message.hashCode()
+                val animate = mLastActiveMessageHash != messageHash
+
+                (holder as ActiveMessageViewHolder).setData(message, animate)
+
+                mLastActiveMessageHash = messageHash
+            }
+        }
     }
 
     fun addItem(message: Message) {
         mItems.add(0, message)
-        notifyItemRangeChanged(0, mItems.size - 2)
-        notifyItemInserted(mItems.size - 1)
+
+        notifyItemInserted(0)
+        notifyItemRangeChanged(0, mItems.size - 1)
     }
 
     fun setItems(messages: List<Message>) {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
@@ -62,5 +61,17 @@ class ActiveMessageView(
         mTextView?.stopTypingText()
 
         super.onDetachedFromWindow()
+    }
+
+    // TODO: looks like a chunk of shitty code. mb there is a different solution?
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        if (mTextView?.isTyping() != true) {
+            if (mTextView?.text?.toString() != mMessage?.text)
+                mTextView?.text = mMessage?.text
+            if (mImageView?.drawable?.toString() != mMessage?.image?.toString())
+                mImageView?.setImageDrawable(mMessage?.image)
+        }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 }
