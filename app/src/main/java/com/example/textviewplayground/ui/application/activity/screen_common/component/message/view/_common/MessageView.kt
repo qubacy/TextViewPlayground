@@ -76,7 +76,7 @@ open class MessageView<
      * The order of calling set...() methods matters!
      */
     protected open fun setContentWithMessage(message: MessageType) {
-        message.text?.also { setText(it) } ?: setText(String())
+        setText(message.text)
         setImage(message.image)
     }
 
@@ -85,17 +85,29 @@ open class MessageView<
         mImageView?.setImageDrawable(null)
     }
 
-    protected fun setText(text: String) {
-        if (mTextView == null) initTextView()
+    protected fun setText(text: String?) {
+        if (mTextView == null) {
+            if (text == null) return
+
+            initTextView()
+        }
 
         setTextContent(text)
+        adjustTextViewForText(text)
+    }
+
+    protected open fun adjustTextViewForText(text: String?) {
+        mTextView?.visibility =
+            if (text == null) View.GONE
+            else if (text.isEmpty()) View.GONE
+            else View.VISIBLE
     }
 
     fun getMessage(): MessageType? {
         return mMessage
     }
 
-    protected open fun setTextContent(text: String) {
+    protected open fun setTextContent(text: String?) {
         mTextView!!.text = text
     }
 

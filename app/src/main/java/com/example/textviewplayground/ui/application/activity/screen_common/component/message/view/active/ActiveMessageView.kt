@@ -38,10 +38,10 @@ class ActiveMessageView(
         setMessage(message)
     }
 
-    override fun setTextContent(text: String) {
+    override fun setTextContent(text: String?) {
         Log.d(TAG, "setTextContent(): view = ${this.toString()}")
 
-        if (mAnimateTyping) mTextView!!.typeText(text)
+        if (mAnimateTyping && text != null) mTextView!!.typeText(text)
         else mTextView!!.setText(text)
     }
 
@@ -66,8 +66,11 @@ class ActiveMessageView(
     // TODO: looks like a chunk of shitty code. mb there is a different solution?
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (mTextView?.isTyping() != true) {
-            if (mTextView?.text?.toString() != mMessage?.text)
-                mTextView?.text = mMessage?.text
+            mAnimateTyping = false
+
+            if (mTextView?.text?.toString() != mMessage?.text) {
+                setText(mMessage?.text)
+            }
             if (mImageView?.drawable?.toString() != mMessage?.image?.toString())
                 mImageView?.setImageDrawable(mMessage?.image)
         }
