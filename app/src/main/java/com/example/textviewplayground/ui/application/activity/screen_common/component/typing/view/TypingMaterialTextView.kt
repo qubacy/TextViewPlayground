@@ -4,8 +4,12 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import com.example.textviewplayground.R
+import com.example.textviewplayground.ui.application.activity.screen_common.component.typing.view.job.TypingJobLauncher
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 class TypingMaterialTextView : MaterialTextView {
     companion object {
@@ -15,9 +19,11 @@ class TypingMaterialTextView : MaterialTextView {
         const val DEFAULT_CHAR_TYPING_DURATION = 500L
     }
 
+    private var mCoroutineScope: CoroutineScope? = null
     private var mCharTypingDuration: Long = DEFAULT_CHAR_TYPING_DURATION
 
-    private var mIsTyping: Boolean = false
+    //private var mIsTyping: Boolean = false
+    private var mTypingJob: Job? = null
 
     private var mFullText: String = String()
     val fullText get() = mFullText
@@ -25,7 +31,8 @@ class TypingMaterialTextView : MaterialTextView {
     private var mCallback: TypingMaterialTextViewCallback? = null
 
     constructor(
-        context: Context, attrs: AttributeSet
+        context: Context,
+        attrs: AttributeSet
     ) : super(context, attrs) {
         initCustomAttrs(context, attrs)
     }
@@ -47,16 +54,21 @@ class TypingMaterialTextView : MaterialTextView {
         attrsTypedArray.recycle()
     }
 
+    fun setCoroutineScope(coroutineScope: CoroutineScope) {
+        mCoroutineScope = coroutineScope
+    }
+
     fun setCallback(callback: TypingMaterialTextViewCallback) {
         mCallback = callback
     }
 
     fun stopTypingText() {
-        mIsTyping = false
+        //mIsTyping = false
+        handleTypingStop()
     }
 
     fun setText(text: String) {
-        if (mIsTyping) stopTypingText()
+        if (mTypingJob != null) stopTypingText()
 
         mFullText = text
         this.text = text
@@ -67,43 +79,56 @@ class TypingMaterialTextView : MaterialTextView {
 
         mFullText = text
 
-        val typeRunnable = fun () {
-            mIsTyping = true
+        if (mTypingJob != null) stopTypingText()
 
-            typeWithAnimation(text, 1)
-        }
+        mTypingJob = TypingJobLauncher(
+            text, this, mCharTypingDuration
+        ) { mCallback?.onTextTypingFinished() }
+            .run(mCoroutineScope!!)
 
-        if (mIsTyping) {
-            stopTypingText()
-            Handler(Looper.myLooper()!!).postDelayed({ typeRunnable() }, mCharTypingDuration)
-
-            return
-        }
-
-        typeRunnable()
+//        val typeRunnable = fun () {
+//            mIsTyping = true
+//
+//            typeWithAnimation(text, 1)
+//        }
+//
+//        if (mIsTyping) {
+//            stopTypingText()
+//            Handler(Looper.myLooper()!!).postDelayed({ typeRunnable() }, mCharTypingDuration)
+//
+//            return
+//        }
+//
+//        typeRunnable()
     }
 
-    private fun typeWithAnimation(text: String, length: Int) {
-        if (!mIsTyping) return
-
-        this.text = text.substring(0, length)
-
-        when (length) {
-            text.length - 1 -> {
-                handleTypingStop()
-
-                return
-            }
-            else -> Handler(Looper.myLooper()!!).postDelayed({
-                typeWithAnimation(text, length + 1)
-            }, mCharTypingDuration)
-        }
-    }
+//    private fun typeWithAnimation(text: String, length: Int) {
+//        Log.d(TAG, "typeWithAnimation(): text = $text; mIsTyping = $mIsTyping;")
+//
+//        if (!mIsTyping) return
+//
+//        this.text = text.substring(0, length)
+//
+//        when (length) {
+//            text.length - 1 -> {
+//                handleTypingStop()
+//
+//                return
+//            }
+//            else -> Handler(Looper.myLooper()!!).postDelayed({
+//                typeWithAnimation(text, length + 1)
+//            }, mCharTypingDuration)
+//        }
+//    }
 
     private fun handleTypingStop() {
         text = mFullText
-        mIsTyping = false
+        //mIsTyping = false
 
-        mCallback?.onTextTypingFinished()
+        Log.d(TAG, "handleTypingStop(): job to cancel = ${mTypingJob.toString()}")
+
+        mTypingJob?.cancel()
+
+        mTypingJob = null
     }
 }

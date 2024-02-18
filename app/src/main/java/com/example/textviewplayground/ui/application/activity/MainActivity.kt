@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.textviewplayground.R
 import com.example.textviewplayground.databinding.ActivityMainBinding
 import com.example.textviewplayground.ui.application.activity.adapter.MessageListAdapter
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(mBinding.root)
 
-        mAdapter = MessageListAdapter()
+        mAdapter = MessageListAdapter(lifecycleScope)
 
         mBinding.messageList.apply {
             adapter = mAdapter
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity() {
             Message(getString(R.string.test_text_2),
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_background, theme)),
             Message(getString(R.string.test_text_3), null),
+            Message(null,
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_background, theme))
         )
     }
 

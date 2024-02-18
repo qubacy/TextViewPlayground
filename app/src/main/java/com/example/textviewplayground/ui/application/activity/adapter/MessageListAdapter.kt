@@ -8,8 +8,11 @@ import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.view.active.ActiveMessageView
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.view.previous.PreviousMessageView
+import kotlinx.coroutines.CoroutineScope
 
-class MessageListAdapter() : RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>() {
+class MessageListAdapter(
+    val coroutineScope: CoroutineScope
+) : RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>() {
     enum class ItemType(val id: Int) {
         ACTIVE(0), PREVIOUS(1);
     }
@@ -46,14 +49,16 @@ class MessageListAdapter() : RecyclerView.Adapter<MessageListAdapter.MessageView
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         return when (viewType) {
             ItemType.PREVIOUS.id -> {
-                val prevMessageView = LayoutInflater.from(parent.context).inflate(
-                    R.layout.component_prev_message, parent, false) as PreviousMessageView
+                val prevMessageView = (LayoutInflater.from(parent.context).inflate(
+                    R.layout.component_prev_message, parent, false) as PreviousMessageView)
+                    .apply { setCoroutineScope(coroutineScope) }
 
                 PreviousMessageViewHolder(prevMessageView)
             }
             ItemType.ACTIVE.id -> {
-                val activeMessageView = LayoutInflater.from(parent.context).inflate(
-                    R.layout.component_active_message, parent, false) as ActiveMessageView
+                val activeMessageView = (LayoutInflater.from(parent.context).inflate(
+                    R.layout.component_active_message, parent, false) as ActiveMessageView)
+                    .apply { setCoroutineScope(coroutineScope) }
 
                 ActiveMessageViewHolder(activeMessageView)
             }
@@ -77,8 +82,8 @@ class MessageListAdapter() : RecyclerView.Adapter<MessageListAdapter.MessageView
 
     fun addItem(message: Message) {
         mItems.add(0, message)
-        notifyItemRangeChanged(0, mItems.size - 1)
-        notifyItemInserted(mItems.size)
+        notifyItemRangeChanged(0, mItems.size - 2)
+        notifyItemInserted(mItems.size - 1)
     }
 
     fun setItems(messages: List<Message>) {

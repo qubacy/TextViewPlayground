@@ -3,18 +3,36 @@ package com.example.textviewplayground.ui.application.activity.screen_common.com
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.coroutines.CoroutineScope
 
 open class MessageView<
     TextViewType : MaterialTextView, ImageViewType : AppCompatImageView, MessageType: Message
 >(
-    context: Context, attrs: AttributeSet
+    context: Context,
+    attrs: AttributeSet
 ) : LinearLayout(context, attrs) {
+    interface ElementType {
+        val id: Int
+    }
+
+    enum class StandardElementType(override val id: Int) : ElementType {
+        TEXT(0), IMAGE(1);
+    }
+
+    companion object {
+        const val TAG = "MessageView"
+    }
+
+    protected var mCoroutineScope: CoroutineScope? = null
+
     protected var mTextView: TextViewType? = null
     protected var mImageView: ImageViewType? = null
 
@@ -24,7 +42,11 @@ open class MessageView<
         super.onFinishInflate()
     }
 
-    protected open fun setImage(image: Drawable) {
+    fun setCoroutineScope(coroutineScope: CoroutineScope) {
+        mCoroutineScope = coroutineScope
+    }
+
+    protected open fun setImage(image: Drawable?) {
         if (mImageView == null) initImageView()
 
         mImageView!!.setImageDrawable(image)
@@ -33,7 +55,7 @@ open class MessageView<
     protected fun initImageView() {
         mImageView = inflateImageView()
 
-        addView(mImageView, 1)
+        addElementView(mImageView!!, StandardElementType.IMAGE)
     }
 
     protected open fun inflateImageView(): ImageViewType {
@@ -50,9 +72,12 @@ open class MessageView<
         setContentWithMessage(message)
     }
 
+    /**
+     * The order of calling set...() methods matters!
+     */
     protected open fun setContentWithMessage(message: MessageType) {
-        message.text?.also { setText(it) }
-        message.image?.also { setImage(it) }
+        message.text?.also { setText(it) } ?: setText(String())
+        setImage(message.image)
     }
 
     protected fun resetContent() {
@@ -77,11 +102,38 @@ open class MessageView<
     protected fun initTextView() {
         mTextView = inflateTextView()
 
-        addView(mTextView, 0)
+        addElementView(mTextView!!, StandardElementType.TEXT)
     }
 
     protected open fun inflateTextView(): TextViewType {
         return LayoutInflater.from(context).inflate(
             R.layout.component_prev_message_text, this, false) as TextViewType
+    }
+
+    /**
+     * A return value designates a processing success status;
+     */
+    protected open fun addElementView(elementView: View, elementType: ElementType): Boolean {
+        when (elementType) {
+            StandardElementType.TEXT -> addTextView(elementView as TextViewType)
+            StandardElementType.IMAGE -> addImageView(elementView as ImageViewType)
+            else -> return false
+        }
+
+        return true
+    }
+
+    protected fun addTextView(textView: TextViewType) {
+        if (mImageView != null) removeViewAt(0)
+
+        addView(textView, 0)
+
+        if (mImageView != null) addImageView(mImageView!!)
+    }
+
+    protected fun addImageView(imageView: ImageViewType) {
+        val viewIndex = if (mTextView != null) 1 else 0
+
+        addView(imageView, viewIndex)
     }
 }
