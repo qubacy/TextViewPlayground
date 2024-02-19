@@ -4,18 +4,18 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import androidx.appcompat.widget.AppCompatImageView
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
 import com.example.textviewplayground.ui.application.activity.screen_common.component.typing.view.TypingMaterialTextView
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.view._common.MessageView
 import com.example.textviewplayground.ui.application.activity.screen_common.component.typing.view.TypingMaterialTextViewCallback
+import com.google.android.material.imageview.ShapeableImageView
 
 class ActiveMessageView(
     context: Context,
     attrs: AttributeSet
 ) : MessageView<
-    TypingMaterialTextView, AppCompatImageView, Message
+    TypingMaterialTextView, ShapeableImageView, Message
 >(context, attrs), TypingMaterialTextViewCallback {
     companion object {
         const val TAG = "ActiveMessageView"

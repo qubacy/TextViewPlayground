@@ -3,21 +3,19 @@ package com.example.textviewplayground.ui.application.activity.screen_common.com
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 
 open class MessageView<
-    TextViewType : MaterialTextView, ImageViewType : AppCompatImageView, MessageType: Message
+    TextViewType : MaterialTextView, ImageViewType : ShapeableImageView, MessageType: Message
 >(
     context: Context,
     attrs: AttributeSet
