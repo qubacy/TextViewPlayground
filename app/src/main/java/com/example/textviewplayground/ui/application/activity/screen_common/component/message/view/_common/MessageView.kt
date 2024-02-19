@@ -60,9 +60,13 @@ open class MessageView<
     }
 
     protected open fun setImage(image: Drawable?) {
-        if (mImageView == null) initImageView()
+        if (mImageView == null) {
+            if (image == null) return
 
-        prepareImageViewForMessage(mMessage!!) // todo: is it ok?
+            initImageView()
+        }
+
+        prepareImageViewForImageAndText(image, mMessage?.text) // todo: is it ok?
         mImageView!!.setImageDrawable(image)
     }
 
@@ -77,13 +81,17 @@ open class MessageView<
             R.layout.component_message_image, this, false) as ImageViewType
     }
 
-    protected open fun prepareImageViewForMessage(message: Message) {
-        val newTopMargin =
-            if (message.text == null || message.isNull()) 0
-            else mElementGapInPx
+    protected open fun prepareImageViewForImageAndText(image: Drawable?, text: String?) {
+        mImageView!!.visibility =
+            if (image == null) View.GONE
+            else View.VISIBLE
 
-        mImageView!!.updateLayoutParams<LayoutParams> {
-            setMargins(leftMargin, newTopMargin, rightMargin, bottomMargin)
+        if (mImageView!!.visibility != View.GONE) {
+            val newTopMargin = if (text.isNullOrEmpty()) 0 else mElementGapInPx
+
+            mImageView!!.updateLayoutParams<LayoutParams> {
+                setMargins(leftMargin, newTopMargin, rightMargin, bottomMargin)
+            }
         }
     }
 
@@ -104,9 +112,9 @@ open class MessageView<
         setImage(message.image)
     }
 
-    protected fun resetContent() {
-        mTextView?.text = String()
-        mImageView?.setImageDrawable(null)
+    protected open fun resetContent() {
+        setText(null)
+        setImage(null)
     }
 
     protected fun setText(text: String?) {

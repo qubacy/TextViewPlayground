@@ -45,6 +45,14 @@ class ActiveMessageView(
         else mTextView!!.setText(text)
     }
 
+    override fun resetContent() {
+        if (mAnimateTyping) {
+            mTextView?.setText(String())
+            setImage(null)
+
+        } else super.resetContent()
+    }
+
     override fun setContentWithMessage(message: Message) {
         if (message.text != null && mAnimateTyping) {
             message.text.also { setText(it) }
@@ -68,11 +76,10 @@ class ActiveMessageView(
         if (mTextView?.isTyping() != true) {
             mAnimateTyping = false
 
-            if (mTextView?.text?.toString() != mMessage?.text) {
+            if (mTextView?.text?.toString() != mMessage?.text)
                 setText(mMessage?.text)
-            }
             if (mImageView?.drawable?.toString() != mMessage?.image?.toString())
-                mImageView?.setImageDrawable(mMessage?.image)
+                setImage(mMessage?.image)
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
