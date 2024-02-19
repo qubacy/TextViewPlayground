@@ -4,10 +4,13 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import com.example.textviewplayground.R
 import com.example.textviewplayground.ui.application.activity.screen_common.component.message.data._common.Message
 import com.google.android.material.textview.MaterialTextView
@@ -29,14 +32,26 @@ open class MessageView<
 
     companion object {
         const val TAG = "MessageView"
+
+        const val DEFAULT_ELEMENT_GAP_IN_DP = 8
     }
 
     protected var mCoroutineScope: CoroutineScope? = null
+
+    protected var mElementGapInPx: Int
 
     protected var mTextView: TextViewType? = null
     protected var mImageView: ImageViewType? = null
 
     protected var mMessage: MessageType? = null
+
+    init {
+        mElementGapInPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            DEFAULT_ELEMENT_GAP_IN_DP.toFloat(),
+            context.resources.displayMetrics
+        ).toInt()
+    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -49,6 +64,7 @@ open class MessageView<
     protected open fun setImage(image: Drawable?) {
         if (mImageView == null) initImageView()
 
+        prepareImageViewForMessage(mMessage!!) // todo: is it ok?
         mImageView!!.setImageDrawable(image)
     }
 
@@ -61,6 +77,16 @@ open class MessageView<
     protected open fun inflateImageView(): ImageViewType {
         return LayoutInflater.from(context).inflate(
             R.layout.component_message_image, this, false) as ImageViewType
+    }
+
+    protected open fun prepareImageViewForMessage(message: Message) {
+        val newTopMargin =
+            if (message.text == null || message.isNull()) 0
+            else mElementGapInPx
+
+        mImageView!!.updateLayoutParams<LayoutParams> {
+            setMargins(leftMargin, newTopMargin, rightMargin, bottomMargin)
+        }
     }
 
     fun setMessage(message: MessageType) {
