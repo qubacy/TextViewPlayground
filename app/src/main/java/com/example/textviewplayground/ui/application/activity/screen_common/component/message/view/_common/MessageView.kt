@@ -82,16 +82,23 @@ open class MessageView<
     }
 
     protected open fun prepareImageViewForImageAndText(image: Drawable?, text: String?) {
+        setImageViewVisibilityWithImage(image)
+
+        if (mImageView!!.visibility != View.GONE)
+            setImageViewMarginsWithText(text)
+    }
+
+    protected open fun setImageViewVisibilityWithImage(image: Drawable?) {
         mImageView!!.visibility =
             if (image == null) View.GONE
             else View.VISIBLE
+    }
 
-        if (mImageView!!.visibility != View.GONE) {
-            val newTopMargin = if (text.isNullOrEmpty()) 0 else mElementGapInPx
+    protected open fun setImageViewMarginsWithText(text: String?) {
+        val newTopMargin = if (text.isNullOrEmpty()) 0 else mElementGapInPx
 
-            mImageView!!.updateLayoutParams<LayoutParams> {
-                setMargins(leftMargin, newTopMargin, rightMargin, bottomMargin)
-            }
+        mImageView!!.updateLayoutParams<LayoutParams> {
+            setMargins(leftMargin, newTopMargin, rightMargin, bottomMargin)
         }
     }
 
