@@ -23,6 +23,7 @@
         app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_50"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:reverseLayout="true"
+        android:overScrollMode="never"
         tools:itemCount="3"
         tools:listitem="@layout/component_active_message"/>
 
