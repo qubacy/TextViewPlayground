@@ -106,9 +106,13 @@ class MessageListAdapter(
     }
 
     fun setItems(messages: List<Message>) {
+        val reversedMessages = messages.reversed()
+
+        mLastActiveMessageHash = reversedMessages[0].hashCode()
+
         mItems.apply {
             clear()
-            addAll(messages)
+            addAll(reversedMessages)
         }
 
         notifyDataSetChanged()

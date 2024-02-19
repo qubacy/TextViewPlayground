@@ -42,8 +42,16 @@ class MainActivity : AppCompatActivity() {
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_background, theme)),
             Message(getString(R.string.test_text_3), null),
             Message(null,
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_background, theme)),
+            Message(getString(R.string.test_text_3),
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_background, theme))
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        mAdapter.setItems(mMessages.asList())
     }
 
     private fun onChangeClicked() {
