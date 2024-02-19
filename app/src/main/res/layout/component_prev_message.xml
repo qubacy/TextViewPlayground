@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/message_back">
+    android:background="@drawable/message_back_adaptive">
 
 </com.example.textviewplayground.ui.application.activity.screen_common.component.message.view.previous.PreviousMessageView>
